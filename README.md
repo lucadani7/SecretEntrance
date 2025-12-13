@@ -24,7 +24,7 @@ The safe dial consists of **100 positions** (0 to 99). The core logic handles:
 ### running the Application
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/lucadani7/SecretEntrance.git](https://github.com/lucadani7/SecretEntrance.git)
+    git clone https://github.com/lucadani7/SecretEntrance.git
     ```
 2.  Navigate to the project folder:
     ```bash
@@ -32,7 +32,7 @@ The safe dial consists of **100 positions** (0 to 99). The core logic handles:
     ```
 3.  Compile and run using Maven:
     ```bash
-    mvn clean compile exec:java -Dexec.mainClass="com.lucadani.ElfSafeCracker"
+    mvn clean compile exec:java -Dexec.mainClass="com.lucadani.SecretEntrance"
     ```
     *(Or simply run the `main` method in IntelliJ IDEA)*
 
