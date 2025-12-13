@@ -1,1 +1,9 @@
 docs/** linguist-vendored
+docs/**/* linguist-vendored
+
+docs/**/*.html linguist-vendored
+docs/**/*.css linguist-vendored
+docs/**/*.js linguist-vendored
+
+docs/** linguist-generated
+docs/**/* linguist-generated
