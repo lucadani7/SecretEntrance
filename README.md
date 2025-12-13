@@ -1,4 +1,4 @@
-# 🎄 Elf Safe Cracker (Secret Entrance)
+# 🎄 Secret Entrance
 
 ![Java](https://img.shields.io/badge/Language-Java_21-orange)
 ![Build](https://img.shields.io/badge/Build-Maven-blue)
@@ -21,7 +21,7 @@ The safe dial consists of **100 positions** (0 to 99). The core logic handles:
 * Java JDK 21+
 * Maven 3.6+
 
-### running the Application
+### Running the application
 1.  Clone the repository:
     ```bash
     git clone https://github.com/lucadani7/SecretEntrance.git
