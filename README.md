@@ -3,7 +3,6 @@
 ![Java](https://img.shields.io/badge/Language-Java_21-orange)
 ![Build](https://img.shields.io/badge/Build-Maven-blue)
 ![Status](https://img.shields.io/badge/Status-Completed-success)
-![Javadoc](lucadani7.github.io/SecretEntrance/)
 
 ## 📖 About the Project
 This serves as a solution to the "Elf Secret Entrance" puzzle. The goal is to simulate a safe's rotary dial mechanism to recover a lost password needed by the Elves for Christmas.
