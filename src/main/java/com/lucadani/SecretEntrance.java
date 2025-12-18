@@ -30,7 +30,7 @@ public class SecretEntrance {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        System.out.println("Password: " + calculatePassword(getInstructions()));
+        System.out.println("Password: " + solvePartOne(getInstructions()));
     }
 
     /**
@@ -43,7 +43,7 @@ public class SecretEntrance {
      * @param instructions A list of strings representing rotations (e.g., "R50", "L10").
      * @return The total count of times the dial visited the {@code TARGET_NUMBER}.
      */
-    public static int calculatePassword(List<String> instructions) {
+    public static int solvePartOne(List<String> instructions) {
         int currentPosition = START_POSITION;
         int passwordCounter = 0;
         System.out.println("--- Start Decriptation ---");
@@ -55,7 +55,18 @@ public class SecretEntrance {
         System.out.println("-------------------------");
 
         for (String instruction : instructions) {
-            int amount = Integer.parseInt(instruction.substring(1));
+            if (instruction == null || instruction.length() < 2) {
+                throw new IllegalArgumentException("Length validation: the instruction must contain at least two characters.");
+            }
+            if (instruction.charAt(0) != 'L' && instruction.charAt(0) != 'R') {
+                throw new IllegalArgumentException("Unknown direction. Only L or R is accepted.");
+            }
+            int amount;
+            try {
+                amount = Integer.parseInt(instruction.substring(1));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Amount invalid in the instruction: " + instruction);
+            }
             if (instruction.charAt(0) == 'R') {
                 currentPosition = (currentPosition + amount) % DIAL_SIZE;
             } else {
@@ -80,23 +91,22 @@ public class SecretEntrance {
      */
     private static List<String> getInstructions() {
         List<String> lines = new ArrayList<>();
-        if (Files.exists(Path.of(SecretEntrance.FILE_NAME))) {
-            try (Scanner scanner = new Scanner(new File(SecretEntrance.FILE_NAME))) {
+        if (Files.exists(Path.of(FILE_NAME))) {
+            try (Scanner scanner = new Scanner(new File(FILE_NAME))) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     if (!line.trim().isEmpty()) {
                         lines.add(line.trim());
                     }
                 }
-                System.out.println("Data sources: " + SecretEntrance.FILE_NAME);
+                System.out.println("Data sources: " + FILE_NAME);
             } catch (Exception e) {
                 System.err.println("Error while reading file: " + e.getMessage());
             }
         }
         if (lines.isEmpty()) {
             System.out.println("Data sources: default example (the file is missing or is empty)...");
-            lines = List.of("L68", "L30", "R48", "L5", "R60",
-                    "L55", "L1", "L99", "R14", "L82");
+            lines = List.of("L68", "L30", "R48", "L5", "R60", "L55", "L1", "L99", "R14", "L82");
         }
         System.out.println();
         System.out.println("Instructions:");
