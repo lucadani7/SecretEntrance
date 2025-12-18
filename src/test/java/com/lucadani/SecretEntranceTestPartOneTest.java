@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.lucadani.SecretEntrance.calculatePassword;
+import static com.lucadani.SecretEntrance.solvePartOne;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * standard use cases, edge cases, negative wrap-arounds, and large integer arithmetic.
  * </p>
  */
-class SecretEntranceTest {
+class SecretEntranceTestPartOneTest {
     /**
      * Verifies the logic using the specific example provided in the project requirements.
      * <p>
@@ -27,7 +27,7 @@ class SecretEntranceTest {
                 "L68", "L30", "R48", "L5", "R60",
                 "L55", "L1", "L99", "R14", "L82"
         );
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(3, result, "The result from example should be 3.");
     }
 
@@ -42,7 +42,7 @@ class SecretEntranceTest {
     @Test
     void testFullRotationRight() {
         List<String> input = List.of("R50", "R100");
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(2, result, "Right rotations that yield 0 should be counted.");
     }
 
@@ -55,7 +55,7 @@ class SecretEntranceTest {
     @Test
     void testFullRotationLeft() {
         List<String> input = List.of("L50", "L100");
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(2, result, "Left rotations that yield 0 should be counted.");
     }
 
@@ -70,7 +70,7 @@ class SecretEntranceTest {
     @Test
     void testNegativeWrapAround() {
         List<String> input = List.of("L51", "R1");
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(1, result, "The dial should correctly wrap around when going below zero.");
     }
 
@@ -84,7 +84,7 @@ class SecretEntranceTest {
     @Test
     void testExactlyOnEdge() {
         List<String> input = List.of("R50", "R100", "L200", "L100");
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(4, result, "Every stop on 0 must be counted, including full rotations.");
     }
 
@@ -98,7 +98,7 @@ class SecretEntranceTest {
     @Test
     void testNeverZero() {
         List<String> input = List.of("L49", "L2", "R3", "R90");
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(0, result, "Skipping over 0 should not increment the password counter.");
     }
 
@@ -112,7 +112,62 @@ class SecretEntranceTest {
     @Test
     void testLargeNumberRotations() {
         List<String> input = List.of("R950", "L1050", "R5");
-        int result = calculatePassword(input);
+        int result = solvePartOne(input);
         assertEquals(1, result, "Large values should be reduced by modulo arithmetic.");
+    }
+
+    /**
+     * Test invalid direction input.
+     * <p>
+     * Tested scenario: an input such as D34, where D is not a valid direction (only L or R is accepted)
+     * Expected result: it throws an {@link IllegalArgumentException} with an adequant message.
+     * </p>
+     */
+    @Test
+    void testInvalidDirectionInput() {
+        List<String> badInput = List.of("R950", "D34", "R5");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> solvePartOne(badInput));
+        assertEquals("Unknown direction. Only L or R is accepted.", exception.getMessage());
+    }
+
+    /**
+     * Test invalid amount value.
+     * <p>
+     * Tested scenario: an input such as Lxy, where xy is not a number
+     * Expected result: it throws an {@link IllegalArgumentException} with an adequant message.
+     * </p>
+     */
+    @Test
+    void testInvalidAmountValue() {
+        List<String> badInput = List.of("Lxy");
+        assertThrows(IllegalArgumentException.class, () -> solvePartOne(badInput));
+    }
+
+    /**
+     * Test lowercase is refused.
+     * <p>
+     * Tested scenario: an input such as r52, where r is not a valid direction (only L or R is accepted)
+     * Expected result: it throws an {@link IllegalArgumentException} with an adequant message.
+     * </p>
+     */
+    @Test
+    void testLowercaseIsRefused() {
+        List<String> badInput = List.of("r52");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> solvePartOne(badInput));
+        assertEquals("Unknown direction. Only L or R is accepted.", exception.getMessage());
+    }
+
+    /**
+     * Test invalid length character.
+     * <p>
+     * Tested scenario: an input who contains maximum 1 character, which is refused
+     * Expected result: it throws an {@link IllegalArgumentException} with an adequant message.
+     * </p>
+     */
+    @Test
+    void testInvalidLengthCharacter() {
+        List<String> badInput = List.of("L");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> solvePartOne(badInput));
+        assertEquals("Length validation: the instruction must contain at least two characters.", exception.getMessage());
     }
 }
