@@ -30,7 +30,90 @@ public class SecretEntrance {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        System.out.println("Password: " + solvePartOne(getInstructions()));
+        List<String> puzzleInput = getInstructions();
+        System.out.println("Password: " + solvePartOne(puzzleInput));
+        int userStartPosition = getStartPositionFromUser();
+        if (userStartPosition != START_POSITION) {
+            System.out.printf("Password (starts at %d position): %d\n", userStartPosition, solvePartTwo(puzzleInput, userStartPosition));
+        }
+    }
+
+    private record ParsedInstruction(char direction, int amount) {}
+
+    private static ParsedInstruction validateAndParse(String instruction) {
+        if (instruction == null || instruction.length() < 2) {
+            throw new IllegalArgumentException("Length validation: the instruction must contain at least two characters.");
+        }
+        if (instruction.charAt(0) != 'L' && instruction.charAt(0) != 'R') {
+            throw new IllegalArgumentException("Unknown direction. Only L or R is accepted.");
+        }
+        int amount;
+        try {
+            amount = Integer.parseInt(instruction.substring(1));
+            return new ParsedInstruction(instruction.charAt(0), amount);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Amount invalid in the instruction: " + instruction);
+        }
+    }
+
+    private static int getStartPositionFromUser() {
+        Scanner consoleScanner = new Scanner(System.in);
+        while (true) {
+            System.out.println();
+            System.out.print("Type the start position of dial (0 - 99) [Default: 50]: ");
+            String input = consoleScanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Using default value: 50");
+                return 50;
+            }
+            try {
+                int position = Integer.parseInt(input);
+                if (position >= 0 && position < DIAL_SIZE) {
+                    return position;
+                } else {
+                    System.out.println("Error: the position must be between 0 and " + (DIAL_SIZE - 1) + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: input " + input + " is not a valid number.");
+            }
+        }
+    }
+
+    /**
+     * Does the same thing as the first part, but this time,
+     * the start position is no longer 50, it is a value chosen by the user.
+     *
+     * @param instructions  the instructions
+     * @param startPosition the start position
+     * @return the long
+     */
+    public static long solvePartTwo(List<String> instructions, int startPosition) {
+        int currentPosition = startPosition;
+        long zeroHits = 0;
+
+        for (String instruction : instructions) {
+            ParsedInstruction parsed = validateAndParse(instruction);
+            char direction = parsed.direction();
+            int amount = parsed.amount();
+            zeroHits += (amount / DIAL_SIZE);
+            int remainder = amount % DIAL_SIZE;
+            if (direction == 'R') {
+                if (currentPosition + remainder >= DIAL_SIZE) {
+                    ++zeroHits;
+                }
+                currentPosition = (currentPosition + remainder) % DIAL_SIZE;
+            } else {
+                if (currentPosition - remainder < 0) {
+                    ++zeroHits;
+                }
+                currentPosition = (currentPosition - remainder) % DIAL_SIZE;
+                if (currentPosition < 0) {
+                    currentPosition += DIAL_SIZE;
+                }
+            }
+        }
+
+        return zeroHits;
     }
 
     /**
@@ -55,23 +138,14 @@ public class SecretEntrance {
         System.out.println("-------------------------");
 
         for (String instruction : instructions) {
-            if (instruction == null || instruction.length() < 2) {
-                throw new IllegalArgumentException("Length validation: the instruction must contain at least two characters.");
-            }
-            if (instruction.charAt(0) != 'L' && instruction.charAt(0) != 'R') {
-                throw new IllegalArgumentException("Unknown direction. Only L or R is accepted.");
-            }
-            int amount;
-            try {
-                amount = Integer.parseInt(instruction.substring(1));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Amount invalid in the instruction: " + instruction);
-            }
-            if (instruction.charAt(0) == 'R') {
-                currentPosition = (currentPosition + amount) % DIAL_SIZE;
+            ParsedInstruction parsed = validateAndParse(instruction);
+            if (parsed.direction() == 'R') {
+                currentPosition = (currentPosition + parsed.amount()) % DIAL_SIZE;
             } else {
-                for (currentPosition -= amount; currentPosition < 0; currentPosition += DIAL_SIZE);
-                currentPosition %= DIAL_SIZE;
+                currentPosition = (currentPosition - parsed.amount()) % DIAL_SIZE;
+                if (currentPosition < 0) {
+                    currentPosition += DIAL_SIZE;
+                }
             }
             if (currentPosition == TARGET_NUMBER) {
                 ++passwordCounter;
@@ -108,10 +182,14 @@ public class SecretEntrance {
             System.out.println("Data sources: default example (the file is missing or is empty)...");
             lines = List.of("L68", "L30", "R48", "L5", "R60", "L55", "L1", "L99", "R14", "L82");
         }
-        System.out.println();
-        System.out.println("Instructions:");
-        lines.forEach(System.out::println);
-        System.out.println();
+        System.out.println("--- Loaded Instructions Stats ---");
+        System.out.println("Total instructions: " + lines.size());
+        System.out.println("Preview (first 10):");
+        lines.stream().limit(10).forEach(line -> System.out.println("  " + line));
+        if (lines.size() > 10) {
+            System.out.println("  ... (and " + (lines.size() - 10) + " more)");
+        }
+        System.out.println("---------------------------------");
         return lines;
     }
 }
